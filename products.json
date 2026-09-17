@@ -1,0 +1,16 @@
+[
+  {
+    "name": "Producto de ejemplo 01",
+    "category": "Por definir",
+    "description": "Producto provisional. Lo reemplazaremos cuando validemos el primer producto ganador.",
+    "currency": "S/",
+    "price": "0.00"
+  },
+  {
+    "name": "Producto de ejemplo 02",
+    "category": "Por definir",
+    "description": "Producto provisional para probar la estructura del catálogo.",
+    "currency": "S/",
+    "price": "0.00"
+  }
+]
