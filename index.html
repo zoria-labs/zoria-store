@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Zoria Store</title>
+  <meta name="description" content="Tienda online de productos seleccionados por Zoria Store." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand" href="./">Zoria Store</a>
+      <a class="cart" href="#productos">Productos</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero container">
+      <p class="eyebrow">Compra simple · Productos seleccionados</p>
+      <h1>Encuentra productos útiles sin complicaciones.</h1>
+      <p class="hero-copy">Estamos preparando nuestra primera colección. Pronto podrás comprar productos seleccionados y recibirlos directamente en tu dirección.</p>
+      <a class="button" href="#productos">Ver productos</a>
+    </section>
+
+    <section id="productos" class="container products-section">
+      <div class="section-heading">
+        <h2>Productos</h2>
+        <p>Catálogo inicial listo para conectar con proveedores.</p>
+      </div>
+      <div id="product-grid" class="product-grid" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>© Zoria Store · Proyecto en desarrollo.</p>
+    </div>
+  </footer>
+
+  <script>
+    fetch('products.json')
+      .then(response => response.json())
+      .then(products => {
+        const grid = document.getElementById('product-grid');
+        grid.innerHTML = products.map(product => `
+          <article class="card">
+            <div class="placeholder" aria-hidden="true">${product.category}</div>
+            <div class="card-body">
+              <p class="tag">${product.category}</p>
+              <h3>${product.name}</h3>
+              <p>${product.description}</p>
+              <div class="card-bottom">
+                <span class="price">${product.currency} ${product.price}</span>
+                <a class="button small" href="mailto:pedidos@zoriastore.example?subject=${encodeURIComponent('Consulta: ' + product.name)}">Consultar</a>
+              </div>
+            </div>
+          </article>
+        `).join('');
+      })
+      .catch(() => {
+        document.getElementById('product-grid').innerHTML = '<p>No se pudo cargar el catálogo.</p>';
+      });
+  </script>
+</body>
+</html>
