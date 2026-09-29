@@ -9,38 +9,101 @@
 <body>
 <header class="topbar"><div class="wrap nav"><a class="logo" href="./">ZORIA <span>STUDY</span></a><a class="pro-link" href="#pro">Pro</a></div></header>
 <main>
-<section class="hero wrap"><div class="badge">MVP · versión 0.1.1</div><h1>Aprende la respuesta.<br><em>No solo la copies.</em></h1><p>Escribe una pregunta o un ejercicio. Zoria te guía paso a paso y después comprueba si realmente lo entendiste.</p><a class="cta" href="#tutor">Probar gratis →</a></section>
-<section id="tutor" class="wrap tutor"><div class="panel">
-<div class="panel-head"><div><span class="kicker">Tutor interactivo</span><h2>¿Qué estás estudiando?</h2></div><span class="free">GRATIS</span></div>
-<label for="question">Tu ejercicio</label><textarea id="question" placeholder="Ejemplo: ¿Cuánto es 24 × 7?"></textarea>
-<div class="chips"><button data-example="¿Cuánto es 24 × 7?">24 × 7</button><button data-example="¿Cuánto es 144 ÷ 12?">144 ÷ 12</button><button data-example="¿Cuánto es 15% de 200?">15% de 200</button></div>
-<button id="solve" class="primary">Explicarme paso a paso</button><div id="result" class="result hidden"></div>
-</div></section>
-<section class="wrap how"><div><span>01</span><h3>Pregunta</h3><p>Escribe lo que no entiendes.</p></div><div><span>02</span><h3>Entiende</h3><p>Recibe una explicación clara.</p></div><div><span>03</span><h3>Comprueba</h3><p>Responde una mini-prueba.</p></div></section>
-<section id="pro" class="wrap pro"><div><span class="kicker">PRÓXIMAMENTE</span><h2>Zoria Study Pro</h2><p>Sesiones ilimitadas, historial de aprendizaje, materias y tutor IA personalizado.</p></div><a class="cta light" href="mailto:zoria.study@example.com?subject=Quiero%20Zoria%20Study%20Pro">Quiero Pro →</a></div></section>
-</main><footer class="wrap footer">Zoria Study · MVP de validación · <span>Hecho para aprender mejor.</span></footer>
+<section class="hero wrap">
+  <div class="badge">MVP · versión 0.2</div>
+  <h1>Aprende la respuesta.<br><em>No solo la copies.</em></h1>
+  <p>Escribe un ejercicio, entiende el procedimiento y comprueba si realmente lo aprendiste.</p>
+  <a class="cta" href="#tutor">Probar gratis →</a>
+</section>
+
+<section id="tutor" class="wrap tutor">
+<div class="panel">
+  <div class="panel-head"><div><span class="kicker">Tutor interactivo</span><h2>¿Qué estás estudiando?</h2></div><span class="free">GRATIS</span></div>
+  <div class="controls">
+    <label for="subject">Materia</label>
+    <select id="subject"><option>Matemáticas</option><option>Práctica general</option></select>
+  </div>
+  <label for="question">Tu ejercicio</label>
+  <textarea id="question" placeholder="Ejemplo: ¿Cuánto es 24 × 7?"></textarea>
+  <div class="chips">
+    <button data-example="¿Cuánto es 24 × 7?">24 × 7</button>
+    <button data-example="¿Cuánto es 144 ÷ 12?">144 ÷ 12</button>
+    <button data-example="¿Cuánto es 15% de 200?">15% de 200</button>
+    <button data-example="¿Cuánto es 45 + 27?">45 + 27</button>
+    <button data-example="¿Cuánto es 90 - 36?">90 - 36</button>
+  </div>
+  <button id="solve" class="primary">Explicarme paso a paso</button>
+  <div id="result" class="result hidden"></div>
+</div>
+</section>
+
+<section class="wrap how">
+  <div><span>01</span><h3>Pregunta</h3><p>Escribe lo que no entiendes.</p></div>
+  <div><span>02</span><h3>Entiende</h3><p>Recibe una explicación clara y ordenada.</p></div>
+  <div><span>03</span><h3>Comprueba</h3><p>Haz una mini-prueba para demostrar que lo aprendiste.</p></div>
+</section>
+
+<section class="wrap progress">
+  <div><div><span class="kicker">TU PROGRESO</span><h2>Aprender también es practicar.</h2></div><div class="stats"><strong id="solved-count">0</strong><span>ejercicios resueltos</span></div></div>
+  <button id="clear-progress" class="text-button">Reiniciar progreso</button>
+</section>
+
+<section id="pro" class="wrap pro">
+  <div><span class="kicker">PRÓXIMAMENTE</span><h2>Zoria Study Pro</h2><p>Tutor IA para preguntas abiertas, más materias, historial y práctica personalizada.</p></div>
+  <a class="cta light" href="mailto:zoria.study@example.com?subject=Quiero%20Zoria%20Study%20Pro">Quiero Pro →</a>
+</section>
+</main>
+<footer class="wrap footer">Zoria Study · MVP de validación · <span>Hecho para aprender mejor.</span></footer>
+
 <script>
 const q=document.getElementById('question'), result=document.getElementById('result');
-document.querySelectorAll('[data-example]').forEach(function(btn){btn.addEventListener('click',function(){q.value=btn.dataset.example;q.focus()})});
-function solve(t){
- const s=t.toLowerCase().replace(/,/g,'.').trim(); let m;
- m=s.match(/(\d+(?:\.\d+)?)\s*[×x*]\s*(\d+(?:\.\d+)?)/);
- if(m){let a=+m[1],b=+m[2],r=a*b;return {answer:r,steps:['Multiplica '+a+' × '+b,'Calcula '+a+' × '+b+' = '+r,'Resultado: '+r]}}
- m=s.match(/(\d+(?:\.\d+)?)\s*(?:÷|\/|dividido por)\s*(\d+(?:\.\d+)?)/);
- if(m){let a=+m[1],b=+m[2],r=a/b;return {answer:r,steps:['Divide '+a+' entre '+b,a+' ÷ '+b+' = '+r,'Resultado: '+r]}}
- m=s.match(/(\d+(?:\.\d+)?)\s*%\s*(?:de)\s*(\d+(?:\.\d+)?)/);
- if(m){let a=+m[1],b=+m[2],r=a*b/100;return {answer:r,steps:['Convierte '+a+'% a decimal: '+a+'/100 = '+a/100,'Multiplica '+a/100+' × '+b,'Resultado: '+r]}}
- m=s.match(/(\d+(?:\.\d+)?)\s*\+\s*(\d+(?:\.\d+)?)/);
- if(m){let a=+m[1],b=+m[2],r=a+b;return {answer:r,steps:['Suma '+a+' + '+b,'Resultado: '+r]}}
- m=s.match(/(\d+(?:\.\d+)?)\s*-\s*(\d+(?:\.\d+)?)/);
- if(m){let a=+m[1],b=+m[2],r=a-b;return {answer:r,steps:['Resta '+a+' - '+b,'Resultado: '+r]}}
- return null;
-}
-document.getElementById('solve').addEventListener('click',function(){
- const text=q.value.trim(); result.className='result';
- if(!text){result.innerHTML='<strong>Escribe un ejercicio primero.</strong>';return}
- const data=solve(text);
- if(!data){result.innerHTML='<div class="notice"><strong>Modo IA próximamente.</strong><p>Este MVP ya funciona con ejercicios básicos de aritmética. El siguiente paso es conectar un modelo de IA para preguntas abiertas y otras materias.</p></div>';return}
- result.innerHTML='<div class="answer"><span>Respuesta</span><strong>'+data.answer+'</strong></div><h3>Así se hace</h3><ol>'+data.steps.map(function(x){return '<li>'+x+'</li>'}).join('')+'</ol><div class="check"><strong>Ahora tú:</strong> intenta explicar con tus palabras por qué el resultado es '+data.answer+'.</div>';
+const countEl=document.getElementById('solved-count');
+let solved=Number(localStorage.getItem('zoriaStudySolved')||0);
+countEl.textContent=solved;
+
+document.querySelectorAll('[data-example]').forEach(btn=>{
+  btn.addEventListener('click',()=>{q.value=btn.dataset.example;q.focus();});
 });
-</script></body></html>
+
+function fmt(n){return Number.isInteger(n)?String(n):String(Math.round(n*10000)/10000);}
+function solve(t){
+  const s=t.toLowerCase().replace(/,/g,'.').trim(); let m;
+  m=s.match(/(\d+(?:\.\d+)?)\s*[×x*]\s*(\d+(?:\.\d+)?)/);
+  if(m){let a=+m[1],b=+m[2],r=a*b;return {answer:fmt(r),steps:['Multiplica '+a+' × '+b,'Calcula '+a+' × '+b+' = '+fmt(r),'Resultado: '+fmt(r)]};}
+  m=s.match(/(\d+(?:\.\d+)?)\s*(?:÷|\/|dividido por)\s*(\d+(?:\.\d+)?)/);
+  if(m){let a=+m[1],b=+m[2];if(b===0)return null;let r=a/b;return {answer:fmt(r),steps:['Divide '+a+' entre '+b,a+' ÷ '+b+' = '+fmt(r),'Resultado: '+fmt(r)]};}
+  m=s.match(/(\d+(?:\.\d+)?)\s*%\s*(?:de)\s*(\d+(?:\.\d+)?)/);
+  if(m){let a=+m[1],b=+m[2],r=a*b/100;return {answer:fmt(r),steps:['Convierte '+a+'% a decimal: '+a+'/100 = '+fmt(a/100),'Multiplica '+fmt(a/100)+' × '+b,'Resultado: '+fmt(r)]};}
+  m=s.match(/(\d+(?:\.\d+)?)\s*\+\s*(\d+(?:\.\d+)?)/);
+  if(m){let a=+m[1],b=+m[2],r=a+b;return {answer:fmt(r),steps:['Suma '+a+' + '+b,'Resultado: '+fmt(r)]};}
+  m=s.match(/(\d+(?:\.\d+)?)\s*-\s*(\d+(?:\.\d+)?)/);
+  if(m){let a=+m[1],b=+m[2],r=a-b;return {answer:fmt(r),steps:['Resta '+a+' - '+b,'Resultado: '+fmt(r)]};}
+  return null;
+}
+
+function renderQuiz(answer){
+  const options=[answer,fmt(Number(answer)+1),fmt(Number(answer)-1),fmt(Number(answer)+2)].sort(()=>Math.random()-.5);
+  return '<div class="quiz"><strong>Ahora tú</strong><p>¿Cuál es el resultado? Elige una opción para comprobar que lo entendiste.</p><div class="quiz-options">'+options.map(o=>'<button data-answer="'+o+'" data-correct="'+(o===answer)+'">'+o+'</button>').join('')+'</div><div id="quiz-feedback"></div></div>';
+}
+
+document.getElementById('solve').addEventListener('click',()=>{
+  const text=q.value.trim(); result.className='result';
+  if(!text){result.innerHTML='<strong>Escribe un ejercicio primero.</strong>';return;}
+  const data=solve(text);
+  if(!data){result.innerHTML='<div class="notice"><strong>Este ejercicio necesita nuestro tutor IA.</strong><p>El MVP ya resuelve aritmética básica. Estamos preparando el tutor para preguntas abiertas, ciencias, historia y más materias.</p><a class="mini-link" href="#pro">Ver Zoria Study Pro →</a></div>';return;}
+  result.innerHTML='<div class="answer"><span>Respuesta</span><strong>'+data.answer+'</strong></div><h3>Así se hace</h3><ol>'+data.steps.map(x=>'<li>'+x+'</li>').join('')+'</ol>'+renderQuiz(data.answer);
+  result.querySelectorAll('[data-answer]').forEach(btn=>btn.addEventListener('click',()=>{
+    const feedback=document.getElementById('quiz-feedback');
+    if(btn.dataset.correct==='true'){
+      solved++;localStorage.setItem('zoriaStudySolved',solved);countEl.textContent=solved;
+      feedback.innerHTML='<p class="success">✓ Correcto. Lo entendiste.</p>';
+    }else feedback.innerHTML='<p class="try-again">Casi. Revisa los pasos y vuelve a intentarlo.</p>';
+  }));
+});
+
+document.getElementById('clear-progress').addEventListener('click',()=>{
+  solved=0;localStorage.setItem('zoriaStudySolved',0);countEl.textContent=0;
+});
+</script>
+</body>
+</html>
