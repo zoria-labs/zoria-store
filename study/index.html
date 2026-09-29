@@ -89,14 +89,25 @@ function renderQuiz(answer){
 const API_URL='https://zoria-store.zoria-admin.workers.dev/api/tutor';
 
 async function askAI(text, subject){
-  const response=await fetch(API_URL,{
+  const controller=new AbortController();
+  const timeout=setTimeout(()=>controller.abort(),30000);
+  let response;
+  try{
+    response=await fetch(API_URL,{
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({question:text,subject})
+    body:JSON.stringify({question:text,subject}),
+    signal:controller.signal
   });
+  clearTimeout(timeout);
   const data=await response.json().catch(()=>({}));
   if(!response.ok) throw new Error(data.error||'No se pudo conectar con Zoria IA.');
   return data;
+  }catch(error){
+    clearTimeout(timeout);
+    if(error.name==='AbortError') throw new Error('Zoria IA tardó demasiado en responder.');
+    throw error;
+  }
 }
 
 function renderAI(data){
