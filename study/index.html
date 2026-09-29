@@ -86,19 +86,66 @@ function renderQuiz(answer){
   return '<div class="quiz"><strong>Ahora tú</strong><p>¿Cuál es el resultado? Elige una opción para comprobar que lo entendiste.</p><div class="quiz-options">'+options.map(o=>'<button data-answer="'+o+'" data-correct="'+(o===answer)+'">'+o+'</button>').join('')+'</div><div id="quiz-feedback"></div></div>';
 }
 
-document.getElementById('solve').addEventListener('click',()=>{
-  const text=q.value.trim(); result.className='result';
+const API_URL='https://zoria-store.zoria-admin.workers.dev/api/tutor';
+
+async function askAI(text, subject){
+  const response=await fetch(API_URL,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({question:text,subject})
+  });
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok) throw new Error(data.error||'No se pudo conectar con Zoria IA.');
+  return data;
+}
+
+function renderAI(data){
+  const steps=Array.isArray(data.steps)?data.steps:[];
+  return '<div class="ai-badge">ZORIA IA</div>'+
+    '<div class="explanation"><h3>Explicación</h3><p>'+escapeHtml(data.explanation||'')+'</p></div>'+
+    (steps.length?'<h3>Pasos</h3><ol>'+steps.map(x=>'<li>'+escapeHtml(x)+'</li>').join('')+'</ol>':'')+
+    '<div class="quiz"><strong>Comprueba que aprendiste</strong><p>'+escapeHtml(data.checkQuestion||'¿Qué paso fue el más importante?')+'</p>'+
+    '<details><summary>Ver respuesta de comprobación</summary><p>'+escapeHtml(data.checkAnswer||'')+'</p></details></div>';
+}
+
+function escapeHtml(value){
+  return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+document.getElementById('solve').addEventListener('click',async()=>{
+  const text=q.value.trim();
+  const subject=document.getElementById('subject').value;
+  result.className='result';
   if(!text){result.innerHTML='<strong>Escribe un ejercicio primero.</strong>';return;}
+
   const data=solve(text);
-  if(!data){result.innerHTML='<div class="notice"><strong>Este ejercicio necesita nuestro tutor IA.</strong><p>El MVP ya resuelve aritmética básica. Estamos preparando el tutor para preguntas abiertas, ciencias, historia y más materias.</p><a class="mini-link" href="#pro">Ver Zoria Study Pro →</a></div>';return;}
-  result.innerHTML='<div class="answer"><span>Respuesta</span><strong>'+data.answer+'</strong></div><h3>Así se hace</h3><ol>'+data.steps.map(x=>'<li>'+x+'</li>').join('')+'</ol>'+renderQuiz(data.answer);
-  result.querySelectorAll('[data-answer]').forEach(btn=>btn.addEventListener('click',()=>{
-    const feedback=document.getElementById('quiz-feedback');
-    if(btn.dataset.correct==='true'){
-      solved++;localStorage.setItem('zoriaStudySolved',solved);countEl.textContent=solved;
-      feedback.innerHTML='<p class="success">✓ Correcto. Lo entendiste.</p>';
-    }else feedback.innerHTML='<p class="try-again">Casi. Revisa los pasos y vuelve a intentarlo.</p>';
-  }));
+  if(data){
+    result.innerHTML='<div class="answer"><span>Respuesta</span><strong>'+data.answer+'</strong></div><h3>Así se hace</h3><ol>'+data.steps.map(x=>'<li>'+escapeHtml(x)+'</li>').join('')+'</ol>'+renderQuiz(data.answer);
+    result.querySelectorAll('[data-answer]').forEach(btn=>btn.addEventListener('click',()=>{
+      const feedback=document.getElementById('quiz-feedback');
+      if(btn.dataset.correct==='true'){
+        solved++;localStorage.setItem('zoriaStudySolved',solved);countEl.textContent=solved;
+        feedback.innerHTML='<p class="success">✓ Correcto. Lo entendiste.</p>';
+      }else feedback.innerHTML='<p class="try-again">Casi. Revisa los pasos y vuelve a intentarlo.</p>';
+    }));
+    return;
+  }
+
+  const solveButton=document.getElementById('solve');
+  solveButton.disabled=true;
+  solveButton.textContent='Zoria está pensando…';
+  result.innerHTML='<div class="notice"><strong>Conectando con Zoria IA…</strong><p>Vamos a explicarlo paso a paso, no solo darte la respuesta.</p></div>';
+
+  try{
+    const ai=await askAI(text,subject);
+    result.innerHTML=renderAI(ai);
+    solved++;localStorage.setItem('zoriaStudySolved',solved);countEl.textContent=solved;
+  }catch(error){
+    result.innerHTML='<div class="notice"><strong>No pude conectar con Zoria IA todavía.</strong><p>'+escapeHtml(error.message)+'</p><p>La aritmética básica sigue funcionando mientras recuperamos la conexión.</p></div>';
+  }finally{
+    solveButton.disabled=false;
+    solveButton.textContent='Explicarme paso a paso';
+  }
 });
 
 document.getElementById('clear-progress').addEventListener('click',()=>{
