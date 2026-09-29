@@ -49,6 +49,8 @@ export default {
       if (question.length > 4000) return json({ error: "La pregunta es demasiado larga." }, 413, origin);
 
       const response = await env.AI.run("@cf/zai-org/glm-4.7-flash", {
+        max_tokens: 500,
+        temperature: 0.2,
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
           { role: "user", content: "Materia: " + subject + "\nEjercicio/pregunta: " + question }
